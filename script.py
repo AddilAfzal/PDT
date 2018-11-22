@@ -15,19 +15,19 @@ block_positions = \
         (11,6), (11,7), (11,9),
         ]
 
-    # block_positions = \
-    # [
-    #     (2,11), (2,12), (2,13),
-    #     (3,4), (3,5), (3,6), (3,11), (3,13),
-    #     (4,4), (4,5), (4,6), (4,7), (4,13),
-    #     (5,4), (5,5), (5,6), (5,7), (5,10), (5,11), (5,12), (5,13),
-    #     (6,3), (6,4), (6,5), (6,6), (6,7), (6,8), (6,9), (6,10), (6,11), (6,12),
-    #     (7,5), (7,6), (7,7), (7,8), (7,9), (7,10),
-    #     (8,5), (8,6), (8,7), (8,8), (8,9), (8,10),
-    #     (9,4), (9,5),(9,6), (9,7), (9,9),
-    #     (10,6), (10,7), (10,9),
-    #     (11,6), (11,7), (11,9),
-    # ]
+# block_positions = \
+# [
+#     (2,11), (2,12), (2,13),
+#     (3,4), (3,5), (3,6), (3,11), (3,13),
+#     (4,4), (4,5), (4,6), (4,7), (4,13),
+#     (5,4), (5,5), (5,6), (5,7), (5,10), (5,11), (5,12), (5,13),
+#     (6,3), (6,4), (6,5), (6,6), (6,7), (6,8), (6,9), (6,10), (6,11), (6,12),
+#     (7,5), (7,6), (7,7), (7,8), (7,9), (7,10),
+#     (8,5), (8,6), (8,7), (8,8), (8,9), (8,10),
+#     (9,6), (9,7), (9,9),
+#     (10,6), (10,7), (10,9),
+#     (11,6), (11,7), (11,9),
+# ]
 
 pointers = {0:'↑', 1:'→', 2:'↓', 3:'←'}
 
@@ -36,7 +36,7 @@ position = start
 direction = 1 # 0 up 1 right 2 down 3 left
 
 stack = list()
-sleep_time = 0.2
+sleep_time = 0.1
 
 gui = tk.Tk()
 for k in range(15):
@@ -52,179 +52,117 @@ def navigate():
     q1()
 
 
-# States
-
-# going right
 def q1():  # Start, facing right
     print("State 1")
     if i():
         r()
         q2()
     elif s():
-        pass
+        stack.append("*")
+        f()
+        l()
+        q3()
 
 
 def q2():
     print("State 2")
-    if s():
+    if i():
+        p()
+        q7() # Do a right crawl
+    elif s():
         f()
         l()
-        q3()
-    elif i():
-        p()
-        q13()
+        q9()
 
 
 def q3():
-    print("State 3")
-    if i():
-        # We are now facing right again, go back to state 1
-        p()
-        q16()
-    elif s():
-        stack.append("*")
-        f()
-        l()
-        q4()
-
-
-def q4():
     """
     Turned left and now crawling
     :return:
     """
-    print("State 4")
+    print("State 3")
     if i():
         r()
-        q5()
+        q4()
     elif s():
         f()
         l() # facing backwards
-        q9()
+        q5()
+
+
+def q4():
+    print("State 4")
+    if i():
+        p()
+        q1()
+    elif s():
+        stack.append("*")
+        f()
+        l()
+        q3()
 
 
 def q5():
+    """
+    Facing left, with block in front
+    :return:
+    """
     print("State 5")
     if i():
         r()
         q6()
     elif s():
-        stack.append("*")
+        stack.pop()
         f()
         l()
-        q4()
+        q7() # ??
 
 
 def q6():
     print("State 6")
     if i():
-        q13()
+        r()  # Facing right
+        q1()
     elif s():
         f()
-        l() # Facing right
-        q7()
-    pass
+        l()
+        q5()
 
 
 def q7():
-    print("State 7")
-    if i():
-        p()
-        q16()
-    elif s():
-        pass
-
-
-def q9():
-    """
-    Facing left, with block in front
-    :return:
-    """
-    print("State 9")
-    if i():
-        r()
-        q10()
-    elif s():
-        pass
-
-
-def q10():
-    print("State 10")
-    if s():
-        f()
-        l()
-        q11()
-    elif i():
-        # Incomplete
-        r() # Facing right
-        q12()
-
-
-def q11():
-    print("State 11")
-    if i():
-        p()
-        q9()
-    elif s():
-        stack.pop()
-        f()
-        l()
-        q13()
-
-
-def q12():
-    print("State 12")
-    if i():
-        # Found a block and now facing right
-        q16()
-    elif s():
-        l()
-        q4()
-
-
-def q13():
     """
     Turned right and now crawling
     :return:
     """
-    print("State 13")
+    print("State 7")
     if i():
         r()
-        q14()
+        q8()
     elif s():
         f()
         l() # facing backwards
         q9()
 
 
-def q14():
-    print("State 14")
+def q8():
+    print("State 8")
     if s():
         stack.pop()
         f()
         l()
-        q15()
+        q7()
     elif i():
         p()
-        q9()
+        q5()
 
 
-def q15():
-    print("State 15")
-    if i():
-        p()
-        q13()
-    elif s():
-        f()
-        l() # Facing right
-        q16()
-
-
-def q16():
-    print("State 16")
+def q9():
+    print("State 9")
     if i() and stack[-1] == '#':
         p()
     elif i():
+        q1()
+    elif s():
         q1()
 
 
